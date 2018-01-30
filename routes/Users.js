@@ -187,8 +187,39 @@ function upsertUserData(userCred) {
   })
 }
 
-// POST: /
-// this of for registering a user
+/**
+ * @api {post} /user Register a single user
+ * @apiName PostUser
+ * @apiGroup User
+ *
+ * @apiParam (Required Header) {String}  token  JWT created from Auth0
+ * @apiParam (Required Param) {String}  phoneNumber  User's phone number
+ * @apiParam (Required Param) {String}  name  User's name
+ * @apiParam (Required Param) {String}  address  User's house postal code
+ * @apiParam (Required Param) {String}  longitude  User's house logitude
+ * @apiParam (Required Param) {String}  latitude  User's house latitude
+ * @apiParam (Required Param) {Array}  schoolAddress  User's children postal code
+ *
+ * @apiSuccess {String} message  success message.
+ * @apiSuccess {String} id  User's Id.
+ * @apiSuccess {String} name  User's name.
+ * @apiSuccess {String} address  User's house postal code..
+ * @apiSuccess {Array} latlong  User's house in latitude and Longitude.
+ * @apiSuccess {String} phoneNumber  User's Id.
+ * @apiSuccess {String} pairedId  User's paired parent Id.
+ * @apiSuccess {String} email  User's email.
+ * @apiSuccess {String} profileURL  User's profile picture URL.
+ * @apiSuccess {Array} schoolAddress  User's children school postal code.
+ *
+ * @apiError (Error 400) IncompleteFormData An array of error's will be send
+ * @apiError (Error 400) InvalidPhoneNumber This will be shown:
+ * <code>["Error : Phone number is invalid"]</code>
+ * @apiError (Error 400) NoTokenFound This will be shown:
+ * <code>["Error : No token key present"]</code>
+ *
+ * @apiError (Error 500) InternalServerError This will be shown:
+ * <code>["Error : Registration failed"]</code> this could cause due to having an invalid token
+ */
 router.post('/', async (req, res) => {
   const { token: jwToken } = req.headers
   let errorMessage = []
@@ -247,8 +278,22 @@ router.post('/', async (req, res) => {
   }
 })
 
-// POST: /generate-otp
-// sends user an otp to validate on their phone
+/**
+ * @api {post} /generate-otp Generate a OTP for a user
+ * @apiName GenerateOTP
+ * @apiGroup User
+ * @apiDeprecated There's no JWT authentication implemented yet
+ *
+ * @apiParam (Required Header) {String}  token  JWT created from Auth0
+ * @apiParam (Required Param) {String}  phoneNumber  User's phone number
+ *
+ * @apiSuccess {String} message  success message.
+ *
+ * @apiError (Error 400) IncompleteFormData An array of error's will be send
+ * @apiError (Error 400) InvalidPhoneNumber This will be shown:
+ * <code>["Error : Phone number is invalid"]</code>
+ *
+ */
 router.post('/generate-otp', async (req, res) => {
   const errorMessage = []
   if (!isEmpty(req.body.phoneNumber)) {
@@ -273,8 +318,37 @@ router.post('/generate-otp', async (req, res) => {
   }
 })
 
-// PUT: /
-// This is to update the user basic credentials
+/**
+ * @api {put} /user Update a single user
+ * @apiName PutUser
+ * @apiGroup User
+ *
+ * @apiParam (Required Header) {String}  token  JWT created from Auth0
+ * @apiParam (Required Param) {String}  phoneNumber  User's phone number
+ * @apiParam (Required Param) {String}  name  User's name
+ * @apiParam (Required Param) {String}  address  User's house postal code
+ * @apiParam (Required Param) {String}  longitude  User's house logitude
+ * @apiParam (Required Param) {String}  latitude  User's house latitude
+ * @apiParam (Required Param) {Array}  schoolAddress  User's children postal code
+ *
+ * @apiSuccess {String} message  success message.
+ * @apiSuccess {String} id  User's Id.
+ * @apiSuccess {String} name  User's name.
+ * @apiSuccess {String} address  User's house postal code..
+ * @apiSuccess {Array} latlong  User's house in latitude and Longitude.
+ * @apiSuccess {String} phoneNumber  User's Id.
+ * @apiSuccess {String} pairedId  User's paired parent Id.
+ * @apiSuccess {String} email  User's email.
+ * @apiSuccess {String} profileURL  User's profile picture URL.
+ * @apiSuccess {Array} schoolAddress  User's children school postal code.
+ *
+ * @apiError (Error 400) IncompleteFormData An array of error's will be send
+ * @apiError (Error 400) NoTokenFound This will be shown:
+ * <code>["Error : No token key present"]</code>
+ *
+ * @apiError (Error 500) InternalServerError This will be shown:
+ * <code>["Error : Registration failed"]</code><br> this could cause due to having an invalid token
+ */
 router.put('/', async (req, res) => {
   try {
     const { token: jwToken } = req.headers
@@ -318,8 +392,28 @@ router.put('/', async (req, res) => {
   }
 })
 
-// GET: /
-// get user data if it exist
+/**
+ * @api {get} /user Get current user
+ * @apiName GetUser
+ * @apiGroup User
+ *
+ * @apiParam (Required Header) {String}  token  JWT created from Auth0
+ *
+ * @apiSuccess {String} User.id  User's Id.
+ * @apiSuccess {String} User.name  User's name.
+ * @apiSuccess {String} User.address  User's house postal code..
+ * @apiSuccess {Array} User.latlong  User's house in latitude and Longitude.
+ * @apiSuccess {String} User.phoneNumber  User's Id.
+ * @apiSuccess {String} User.pairedId  User's paired parent Id.
+ * @apiSuccess {String} User.profileURL  User's profile picture URL.
+ * @apiSuccess {Array} User.schoolAddress  User's children school postal code.
+ *
+ * @apiError (Error 401) NoTokenFound This will be shown:
+ * <code>["Error : No token key present"]</code>
+ *
+ * @apiError (Error 500) InternalServerError This will be shown:
+ * <code>["Error : Registration failed"]</code><br> this could cause due to having an invalid token
+ */
 router.get('/', async (req, res) => {
   const { token: jwToken } = req.headers
   try {
@@ -361,9 +455,21 @@ router.get('/', async (req, res) => {
   }
 })
 
-// GET: /nearby
-// this is to get any nearby users
-// this api is is for front-end future implementation if they want to see anyone nearby them
+/**
+ * @api {get} /user/nearby Get nearby user's
+ * @apiName GetNearbyUser
+ * @apiGroup User
+ *
+ * @apiParam (Required Header) {String}  token  JWT created from Auth0
+ *
+ * @apiSuccess {Array}   users  Array of users data
+ *
+ * @apiError (Error 401) NoTokenFound This will be shown:
+ * <code>["Error : No token key present"]</code>
+ *
+ * @apiError (Error 500) InternalServerError This will be shown:
+ * <code>["Error : Registration failed"]</code><br> this could cause due to having an invalid token
+ */
 router.get('/nearby', async (req, res) => {
   try {
     const { token: jwToken } = req.headers
@@ -384,8 +490,30 @@ router.get('/nearby', async (req, res) => {
   }
 })
 
-// GET: /{Userid}
-// get single user
+/**
+ * @api {get} /user/:userId Get single user
+ * @apiName GetUserById
+ * @apiGroup User
+ *
+ * @apiParam (Required URL Param) {String}  userId  Id of the User you want to view
+ * @apiParam (Required Header) {String}  token  JWT created from Auth0
+ *
+ * @apiSuccess {String} User.id  User's Id.
+ * @apiSuccess {String} User.name  User's name.
+ * @apiSuccess {String} User.address  User's house postal code..
+ * @apiSuccess {Array} User.latlong  User's house in latitude and Longitude.
+ * @apiSuccess {String} User.phoneNumber  User's Id.
+ * @apiSuccess {String} User.pairedId  User's paired parent Id.
+ * @apiSuccess {String} User.profileURL  User's profile picture URL.
+ * @apiSuccess {Array} User.schoolAddress  User's children school postal code.
+ *
+ * @apiError (Error 401) NoTokenFound This will be shown:
+ * <code>["Error : No token key present"]</code>
+ * @apiError (Error 401) NoUserFound This will be shown:
+ * <code>["User doesn't exist in database"]</code>
+ * @apiError (Error 500) InternalServerError This will be shown:
+ * <code>["Error : Registration failed"]</code><br> this could cause due to having an invalid token
+ */
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params
   if (!isEmpty(userId)) {
